@@ -12,6 +12,8 @@ Each skill is installed on its own, with the command in its section below. Insta
 
 [`linkedin-reader`](skills/linkedin-reader) reads one LinkedIn post together with its full comment thread - nested replies and truncated bodies included - through your own authenticated browser session, and saves it as a structured text file. You paste a post URL to your agent and ask it to read or archive the thread.
 
+It was born out of a habit: while I am working on something, a related LinkedIn post shows up and I want to dig into it without leaving what I am doing. The point is to put that material into the AI's context - the post, the discussion under it, and the first three links cited in the body when they are readable - and then ask questions about it, instead of reading the thread by hand in the browser.
+
 It works on a single link at a time, on purpose: one post per invocation, no batches, no scheduling. Links found in the post body are followed and appended as sources, up to three.
 
 ```bash

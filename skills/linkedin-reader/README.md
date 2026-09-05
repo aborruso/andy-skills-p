@@ -3,6 +3,11 @@
 An [Agent Skill](https://agentskills.io) that reads one LinkedIn post together
 with its full comment thread and saves it as a structured text file.
 
+It is meant to put a thread into an AI's context while you are working on
+something else: a related post shows up, and instead of reading it in the browser
+you hand the agent the post, the discussion under it and the first three links
+cited in the body, when they are readable, and ask your questions about all of it.
+
 It exists because no public downloader extracts LinkedIn comments: `yt-dlp` gets
 the video of a post, nothing gets the discussion under it. The only practical way
 to read a thread is an authenticated session, so this skill drives one — your own,
