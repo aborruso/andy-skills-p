@@ -4,37 +4,24 @@ This is where I collect some of the Agent Skills I actually use, published becau
 
 A skill is a folder with a `SKILL.md` inside: frontmatter that says what it does and when to use it, and a body with the instructions the agent follows. The format is the one described by the [Agent Skills specification](https://agentskills.io/specification): it is client-neutral, so these work with any AI client that reads skills - Claude Code, Cursor, Codex, Copilot, Gemini CLI and the others alike. Nothing here is tied to a specific one.
 
-## Install
+Each skill is installed on its own, with the command in its section below. Installing needs Node, since it goes through `npx`.
+
+## Skills
+
+### LinkedIn reader
+
+[`linkedin-reader`](skills/linkedin-reader) reads one LinkedIn post together with its full comment thread - nested replies and truncated bodies included - through your own authenticated browser session, and saves it as a structured text file. You paste a post URL to your agent and ask it to read or archive the thread.
+
+It works on a single link at a time, on purpose: one post per invocation, no batches, no scheduling. Links found in the post body are followed and appended as sources, up to three.
 
 ```bash
-npx skills add aborruso/andy-skills-p
+npx skills add aborruso/andy-skills-p --skill linkedin-reader
 ```
 
-That needs Node installed (`npx` ships with it). The wizard asks which skills you want, which AI clients to install them for, whether to install globally or in the current project, and whether to link or copy the files. Answer **global** and **symlink**: global makes the skills available in every project instead of just this one, and the symlink keeps them following the repo. Installed that way, later changes come down with:
+The wizard asks which AI clients to install it for, whether to install globally or only in the current project, and whether to link or copy the files. Answer **global** and **symlink**: global makes the skill available in every project, and the symlink keeps it following the repo, so later changes come down with `npx skills update linkedin-reader` - a copy has to be reinstalled instead.
 
-```bash
-npx skills update linkedin-reader   # or `npx skills update` for all of them
-```
-
-A copy has to be reinstalled instead.
-
-Add `--skill linkedin-reader` to take just one, `--list` to see what the repo contains without installing anything, `-g` to skip the scope question:
-
-```bash
-npx skills add aborruso/andy-skills-p --list
-npx skills add aborruso/andy-skills-p --skill linkedin-reader -g
-```
-
-Copying the folder by hand works too: put `skills/<name>/` wherever your client looks for skills (`~/.claude/skills/` for Claude Code, the equivalent directory for any other client).
-
-Each skill has its own README with requirements and usage. `linkedin-reader` needs a one-off manual login in a visible browser window before its first use: see [its README](skills/linkedin-reader#one-off-login).
+Before the first read it needs a one-off manual login in a visible browser window, and it expects `agent-browser` on the PATH: see [its README](skills/linkedin-reader#one-off-login).
 
 ## License
 
 MIT - see [LICENSE](LICENSE).
-
-## Index
-
-| Skill | What it does |
-| --- | --- |
-| [`linkedin-reader`](skills/linkedin-reader) | Reads one LinkedIn post with its full comment thread through an authenticated browser session, and saves it as a structured text file. |
