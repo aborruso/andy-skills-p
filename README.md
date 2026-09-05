@@ -10,7 +10,9 @@ A skill is a folder with a `SKILL.md` inside: frontmatter that says what it does
 npx skills add aborruso/andy-skills-p
 ```
 
-That needs Node installed (`npx` ships with it). The CLI asks which skills you want and which agents to install them for, then links each one where that agent looks for skills. Add `-g` to install at user level instead of the current project, `--skill linkedin-reader` to take just one, `--list` to see what the repo contains without installing anything:
+That needs Node installed (`npx` ships with it). The wizard asks which skills you want, which AI clients to install them for, whether to install globally or in the current project, and whether to link or copy the files. Answer **global** and **symlink**: global makes the skills available in every project instead of just this one, and the symlink keeps them following the repo, so `npx skills update` is enough to get later changes - a copy has to be reinstalled.
+
+Add `--skill linkedin-reader` to take just one, `--list` to see what the repo contains without installing anything, `-g` to skip the scope question:
 
 ```bash
 npx skills add aborruso/andy-skills-p --list

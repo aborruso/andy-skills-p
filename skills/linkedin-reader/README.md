@@ -47,8 +47,10 @@ npx skills add aborruso/andy-skills-p --skill linkedin-reader
 ```
 
 That needs Node (`npx` comes with it), and it works for any AI client that reads
-skills, not just one: the CLI asks which agents to install for. It installs into
-the current project; add `-g` for user level. Copying
+skills, not just one: the wizard asks which agents to install for. Answer
+**global** to the scope question (or pass `-g`) and **symlink** to the other one:
+global makes it available in every project, the symlink lets `npx skills update`
+pick up later changes. Copying
 `skills/linkedin-reader/` into the skills directory of your client by hand works
 too (`~/.claude/skills/` for Claude Code, the equivalent elsewhere).
 

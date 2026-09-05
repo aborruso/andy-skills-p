@@ -5,9 +5,12 @@
 - The install instructions now lead with `npx skills add aborruso/andy-skills-p`
   (`--skill linkedin-reader` for this one alone, `-g` for user level, `--list` to
   look first), taken from the CLI's own help: `owner/repo/skill` as a path is not
-  a form it accepts. Claude Code is now one example among the clients, not the
-  assumed one, and the root README says up front that this skill needs a manual
-  login before its first read - until now that only surfaced as exit 2.
+  a form it accepts. They also say which wizard answers to give - global scope
+  and symlink, so the skills work in every project and follow the repo on
+  `npx skills update` instead of freezing as a copy.
+- Claude Code is now one example among the clients, not the assumed one, and the
+  root README says up front that this skill needs a manual login before its
+  first read - until now that only surfaced as exit 2.
 - The exit-2 message told the user to run `close --all`, contradicting the
   guarantee that other agent browsers are left alone; it now closes only the
   `linkedin` session, like the exit-3 message already did.
