@@ -1,5 +1,25 @@
 # LOG
 
+## 2026-09-05 — cold start of the browser, exit 4 out of nowhere
+
+- A run failed with exit 4 ("could not open") on a post that was perfectly
+  reachable: the retry after the `close` waited 3 s and was too short for a cold
+  start, when the browser is not yet accepting connections
+  (`Could not configure browser: Failed to connect`). Both causes - profile not
+  released after the close, and browser still starting - clear on their own, so
+  the single retry became three attempts with a growing pause (0, 3, 8 s), each
+  one under `budget` so a stuck launch surfaces as exit 5 instead of eating the
+  240 s allowance.
+- The `agent-browser` error was swallowed by `2>&1 >/dev/null`, so exit 4 said
+  only "could not open" and its documented remedy ("check the URL by hand")
+  pointed at the wrong suspect: the URL was blamed, first for its query string.
+  The message now carries the actual `agent-browser` output, and the exit-4 row
+  in SKILL.md names the launch failure.
+- Verified with a stub `agent-browser` on PATH, since the real race is rare:
+  failing twice then succeeding gets past the open, always failing exits 4 with
+  the captured text. The URL with the `utm_source=...` query string that had
+  failed reads fine (56 comments).
+
 ## 2026-09-05 — published as a public skill
 
 - Moved into the `andy-skills` repository, which becomes the source of truth; the

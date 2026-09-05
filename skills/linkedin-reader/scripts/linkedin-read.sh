@@ -111,13 +111,23 @@ mkdir -p "$OUTDIR" || die 1 "output-dir cannot be created: $OUTDIR"
 
 # --- open on the dedicated session (never `close --all`: other agent browsers stay up)
 $AB --session "$SESSION" close >/dev/null 2>&1 || true
-# One retry: right after the close the previous browser may not have released the
-# profile yet, and the open fails with "Could not configure browser".
-$AB --session "$SESSION" --profile "$PROFILE" open "$URL" >/dev/null 2>&1 || {
-  sleep 3
-  $AB --session "$SESSION" --profile "$PROFILE" open "$URL" >/dev/null 2>&1 \
-    || die 4 "could not open: $URL"
-}
+# Retries with a growing pause: on a cold start the browser is not yet accepting
+# connections, and right after the close the previous one may not have released
+# the profile. Both surface as "Could not configure browser: Failed to connect"
+# and both clear on their own — a single retry after 3s proved too short.
+OPENERR=""
+OPENED=0
+for pause in 0 3 8; do
+  [ "$pause" -gt 0 ] && sleep "$pause"
+  budget
+  if OPENERR="$($AB --session "$SESSION" --profile "$PROFILE" open "$URL" 2>&1)"; then
+    OPENED=1
+    break
+  fi
+done
+[ "$OPENED" = "1" ] || die 4 "could not open: $URL
+The browser did not start, or the post is not reachable. agent-browser said:
+${OPENERR:-(no output)}"
 $AB --session "$SESSION" set viewport "$VP_W" "$VP_H" >/dev/null 2>&1 || true
 $AB --session "$SESSION" reload >/dev/null 2>&1 || true
 sleep 4

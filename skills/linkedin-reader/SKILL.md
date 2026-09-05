@@ -86,7 +86,7 @@ did not serve every comment to this session: the file is partial and says so.
 | 1 | bad usage, unrecognised URL, missing required tool | fix the command line |
 | 2 | dedicated profile missing | one-off headed setup (the script prints the commands) |
 | 3 | session expired | one-off headed re-login (the script prints the commands), then re-run |
-| 4 | post unavailable, not visible to the account, or post text not extracted | check the URL by hand in a browser |
+| 4 | browser failed to start, post unavailable, not visible to the account, or post text not extracted | read the message: it carries what agent-browser said. If the browser did not start, re-run; otherwise check the URL by hand in a browser |
 | 5 | internal timeout (240 s) | retry; if it persists, the post is too heavy to load |
 
 ## Known limits
