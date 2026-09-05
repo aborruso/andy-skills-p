@@ -31,7 +31,8 @@ scripts/linkedin-read.sh --no-links '<post-url>'
 ```
 
 Paths are relative to this skill directory; from anywhere else use the absolute
-path (typically `~/.claude/skills/linkedin-reader/scripts/linkedin-read.sh`).
+path, i.e. `linkedin-reader/scripts/linkedin-read.sh` under wherever the client
+installed the skill (`~/.claude/skills/` for Claude Code, elsewhere for others).
 
 **Links in the post body are followed by default**: at most 3, never the ones in
 comments, with the content extracted by `trafilatura` and appended to a
@@ -60,11 +61,14 @@ used for the LinkedIn login and nothing else, on the agent-browser session named
 `linkedin`. It never calls `close --all`, so other agent browsers are left alone.
 
 The first login has to happen by hand in a visible browser window; the script
-prints the exact commands when it exits 2 or 3. A headed browser needs a display:
+prints the exact commands when it exits 2 or 3. Run that headed command yourself,
+then stop and tell the user to log in in the window that just opened and to say
+when they are done: the browser stays up waiting for them, and only after their
+confirmation do you re-run the read. Never ask the user for their password - they
+type it themselves in that window. A headed browser needs a display:
 on a Linux desktop, on macOS and on Windows it works as is; on WSL2 with WSLg too;
 on WSL2 **without** WSLg, point `DISPLAY` at your own X server (X410, VcXsrv,
-Xming) before running the headed command. Never ask the user for their password —
-they type it themselves in that window.
+Xming) before running the headed command.
 
 ## Output
 

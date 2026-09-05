@@ -1,5 +1,19 @@
 # LOG
 
+## 2026-09-05 - install docs and the first-login path
+
+- The install instructions now lead with `npx skills add aborruso/andy-skills-p`
+  (`--skill linkedin-reader` for this one alone, `-g` for user level, `--list` to
+  look first), taken from the CLI's own help: `owner/repo/skill` as a path is not
+  a form it accepts. Claude Code is now one example among the clients, not the
+  assumed one, and the root README says up front that this skill needs a manual
+  login before its first read - until now that only surfaced as exit 2.
+- The exit-2 message told the user to run `close --all`, contradicting the
+  guarantee that other agent browsers are left alone; it now closes only the
+  `linkedin` session, like the exit-3 message already did.
+- SKILL.md says who runs the headed command: the agent launches it, then stops
+  and waits for the user to confirm the login before re-running the read.
+
 ## 2026-09-05 — cold start of the browser, exit 4 out of nowhere
 
 - A run failed with exit 4 ("could not open") on a post that was perfectly

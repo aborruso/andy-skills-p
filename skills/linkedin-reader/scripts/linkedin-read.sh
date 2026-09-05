@@ -101,7 +101,7 @@ case "$URL" in
   *) die 1 "unrecognised URL: expected a post https://(www.)linkedin.com/posts/... (or an lnkd.in pointing to one)" ;;
 esac
 [ -d "$PROFILE" ] || die 2 "dedicated profile missing ($PROFILE). One-off headed setup:
-  $AB close --all
+  $AB --session $SESSION close
   $AB open 'https://www.linkedin.com/login' --headed --session $SESSION --profile $PROFILE
 Log in by hand in the window that opens, then re-run this command.
 A headed browser needs a display: on a Linux desktop, macOS or Windows this works

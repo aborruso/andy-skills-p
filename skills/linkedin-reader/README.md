@@ -42,9 +42,17 @@ skipped with a warning.
 
 ## Install
 
-Copy `skills/linkedin-reader/` into your agent's skills directory (for Claude Code:
-`~/.claude/skills/`), or install it with the `skills` CLI. Then do the one-off
-login.
+```bash
+npx skills add aborruso/andy-skills-p --skill linkedin-reader
+```
+
+That needs Node (`npx` comes with it), and it works for any AI client that reads
+skills, not just one: the CLI asks which agents to install for. It installs into
+the current project; add `-g` for user level. Copying
+`skills/linkedin-reader/` into the skills directory of your client by hand works
+too (`~/.claude/skills/` for Claude Code, the equivalent elsewhere).
+
+Then do the one-off login: without it the first read stops with exit 2.
 
 ## One-off login
 
