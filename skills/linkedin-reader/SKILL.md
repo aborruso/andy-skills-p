@@ -1,6 +1,6 @@
 ---
 name: linkedin-reader
-description: Reads a LinkedIn post together with its full comment thread, using the authenticated session of a dedicated agent-browser profile, and saves a structured text file named YYYY-MM-DD_slug_snake_case.txt. ALWAYS use this skill when the user passes a linkedin.com/posts/ URL or an lnkd.in short link and asks to read it, save it, archive it, or extract its text or its comments — even without saying "skill": for example "read me this post", "save the comments of...", "what does this LinkedIn thread say", "leggimi questo post", "salvami i commenti di...", "cosa dice questo thread LinkedIn". Do not use it for LinkedIn Learning, for profiles or for company pages (posts only).
+description: 'Reads a LinkedIn post together with its full comment thread, using the authenticated session of a dedicated agent-browser profile, and saves a structured text file named YYYY-MM-DD_slug_snake_case.txt. ALWAYS use this skill when the user passes a linkedin.com/posts/ URL or an lnkd.in short link and asks to read it, save it, archive it, or extract its text or its comments — even without saying "skill": for example "read me this post", "save the comments of...", "what does this LinkedIn thread say", "leggimi questo post", "salvami i commenti di...", "cosa dice questo thread LinkedIn". Do not use it for LinkedIn Learning, for profiles or for company pages (posts only).'
 ---
 
 # LinkedIn post reader (with comments)
