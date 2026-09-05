@@ -13,7 +13,7 @@ npx skills add aborruso/andy-skills-p
 That needs Node installed (`npx` ships with it). The wizard asks which skills you want, which AI clients to install them for, whether to install globally or in the current project, and whether to link or copy the files. Answer **global** and **symlink**: global makes the skills available in every project instead of just this one, and the symlink keeps them following the repo. Installed that way, later changes come down with:
 
 ```bash
-npx skills update linkedin-reader -g   # or `npx skills update -g` for all of them
+npx skills update linkedin-reader   # or `npx skills update` for all of them
 ```
 
 A copy has to be reinstalled instead.

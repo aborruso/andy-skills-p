@@ -50,7 +50,7 @@ That needs Node (`npx` comes with it), and it works for any AI client that reads
 skills, not just one: the wizard asks which agents to install for. Answer
 **global** to the scope question (or pass `-g`) and **symlink** to the other one:
 global makes it available in every project, the symlink means later changes come
-down with `npx skills update linkedin-reader -g`. Copying
+down with `npx skills update linkedin-reader`. Copying
 `skills/linkedin-reader/` into the skills directory of your client by hand works
 too (`~/.claude/skills/` for Claude Code, the equivalent elsewhere).
 
