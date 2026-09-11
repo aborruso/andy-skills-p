@@ -18,10 +18,10 @@ for the account they run it with.
 
 A deterministic bash script, `scripts/linkedin-read.sh`, does all the work: it
 resolves `lnkd.in` short links, opens the post on the dedicated, already
-authenticated browser session, sets a tall viewport, loads comments with
-progressive scrolls, expands nested replies and truncated bodies ("…more"), then
-extracts post and comments from the DOM with `scripts/extract.js` and writes the
-file.
+authenticated browser session, sets a tall viewport, loads comments by
+scrolling `<main>` (the page does not scroll on `window`), expands nested replies
+and truncated bodies ("…more"), then extracts post and comments from the DOM with
+`scripts/extract.js` and writes the file.
 
 ```bash
 scripts/linkedin-read.sh '<post-url>'          # output in /tmp
@@ -90,44 +90,54 @@ did not serve every comment to this session: the file is partial and says so.
 | 1 | bad usage, unrecognised URL, missing required tool | fix the command line |
 | 2 | dedicated profile missing | one-off headed setup (the script prints the commands) |
 | 3 | session expired | one-off headed re-login (the script prints the commands), then re-run |
-| 4 | browser failed to start, post unavailable, not visible to the account, or post text not extracted | read the message: it carries what agent-browser said. If the browser did not start, re-run; otherwise check the URL by hand in a browser |
+| 4 | browser failed to start, post unavailable, not visible to the account, or post text not extracted | read the message: it carries what agent-browser said, or the hook counts (`textBoxes=`, `commentBlocks=`, `commentary=`, `lazyColumn=`). If the browser did not start, re-run; if every hook reads 0, LinkedIn changed the page again; otherwise check the URL by hand in a browser |
 | 5 | internal timeout (240 s) | retry; if it persists, the post is too heavy to load |
 
 ## Known limits
 
-- Extraction hangs off the semantic classes of LinkedIn's Ember UI
-  (`article.comments-comment-entity`, `.update-components-update-v2__commentary`,
-  `.comments-comment-meta__*`) and off the URN in `data-id`, not off the hashed
-  utility classes and not off UI text: it therefore works with posts and comments
-  in any language. Every field comes out of its own selector, not out of the
-  position of a line in `innerText`.
-- **Dead hooks, gone since 2026-09-05**: `div[id^="replaceableComment_urn:li:comment"]`
-  and `[data-testid="expandable-text-box"]`. On that deployment the page exposes
-  no `data-testid` at all (verified headless and headed: 0 in both), so this is
-  not an A/B between two UIs and the old path was not kept as a fallback. When
-  extraction fails, `die 4` prints the hook counts (`entities=`, `commentary=`,
-  `updateText=`, `socialCounts=`): all zeros mean the structure changed again.
-- **The tall viewport (1400x3000) is mandatory**: the comment list is virtualised
-  and with a standard viewport LinkedIn renders only a handful of them (measured:
-  4 out of 11).
+- **LinkedIn replaced its web client in September 2026.** What the page serves now
+  is a server-driven UI (`data-component-type="LazyColumn"`): there is no
+  `article` element anywhere, no `data-id`, and every surviving class is hashed
+  (`_4a74b613`). Everything the skill used before - `article.comments-comment-entity`,
+  `.update-components-*`, `.social-details-social-counts__comments` - returns 0.
+  The extractor was rewritten on 2026-09-11 around what is left.
+- **The hooks now are `data-testid` and the shape of the blocks.**
+  `[data-testid="expandable-text-box"]` marks the post body and every comment
+  body; the block owning one is the first ancestor carrying an identity link
+  (`/in/`, `/company/`, `/school/`, `/showcase/`) that is **not** part of the body
+  itself - the exclusion matters, because a mention inside a comment is an
+  identity link too. A comment block has exactly 3 children (header, body, social
+  bar); the post is the text box that is not a comment. None of this depends on
+  the UI language. When extraction fails, `die 4` prints the hook counts
+  (`textBoxes=`, `commentBlocks=`, `commentary=`, `lazyColumn=`): all zeros mean
+  the structure changed again.
+- **Author, timestamp and reactions have no hook of their own** and are read by
+  position inside their block, not from a line of the whole page's innerText.
+  The author name arrives as an accessibility composite ("Eric Raszewski, MBA,
+  Profilo Premium 2°") and is trimmed off the degree marker, which is language
+  independent; your own comments carry "Tu"/"You" in place of a degree, taken
+  from the badge row of the same link.
+- **The page does not scroll on `window`**: LinkedIn puts the scroll inside
+  `<main>` (`overflow-y: scroll`). `agent-browser scroll` therefore moves nothing
+  and no further comment is fetched - measured on a 57-comment post, 18 loaded
+  that way against 62 driving `main.scrollTop`. The tall viewport (1400x3000) is
+  still needed on top of that.
 - **The sort order stays the default ("Most relevant")**, so comments in the file
-  are not in chronological order. Nothing is lost: on a test post (14 comments,
-  2026-08-18) switching to "Most recent" returned exactly the same comments, same
-  ids, none extra. Switching order requires a real click
-  (`agent-browser find text 'Most recent' click`): an `element.click()` from
-  `eval` does not toggle the menu, which is React/floating-ui.
-- Expansion clicks by class first
-  (`.feed-shared-inline-show-more-text__see-more-less-toggle`,
-  `.comments-comment-item__inline-show-more-text button`), then by label for the
-  buttons that carry no class of their own ("See previous replies", "Load more
+  are not in chronological order.
+- **Replies are no longer nested in the DOM**: they sit at the same depth as
+  top-level comments and are told apart by horizontal indent (measured: 465 px
+  against 425 px). The marker is geometric, so it holds in any language, but a
+  change of layout would silently drop the `(reply)` mark - nothing else in the
+  file changes if it does.
+- Expansion clicks the truncation toggles by `data-testid="expandable-text-button"`,
+  then the buttons that only carry a label ("See previous replies", "Load more
   comments"). English and Italian labels are covered; **on a UI in another
-  language those buttons are not clicked and nested replies may be missing** —
-  the count in the header still shows the gap. Tested on LinkedIn 2026-09.
+  language those buttons are not clicked and nested replies may be missing** -
+  the count in the header still shows the gap.
 - Comments made only of an image or a GIF, with no text, do not make it into the
   file (the header still flags the gap between extracted and declared). That is
-  not the only cause of a gap, though: on one post an entity was missing from the
-  served DOM even with no image-only comments around. A gap of 1-2 therefore does
-  not imply a bug in the extractor.
+  not the only cause of a gap: on a 67-comment post 65 came out, with no
+  image-only comment in sight. A gap of 1-2 therefore does not imply a bug.
 - **`lnkd.in` links come in two shapes**: `lnkd.in/p/xxx` (a shared post) answers
   with a 3xx redirect, `lnkd.in/xxx` (a link inside a post body) answers 200 with
   an interstitial page carrying the destination in the body. `%{redirect_url}`

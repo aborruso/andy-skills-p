@@ -102,10 +102,12 @@ that fix it.
 
 ## Known limits
 
-Extraction hangs off LinkedIn's Ember semantic class names, which are stable and
-language independent — but they are LinkedIn's, and LinkedIn changes them (it did,
-in September 2026). When that happens the script exits 4 and prints which hook
-died. The expansion buttons for nested replies are matched by English and Italian
+Extraction hangs off the `data-testid` attributes of LinkedIn's server-driven UI
+and off the shape of each block — never off the class names, which are hashed, and
+never off the UI text. They are LinkedIn's own, and LinkedIn changes them: in
+September 2026 the whole web client was replaced and every hook the skill used
+until then went to zero at once. When that happens the script exits 4 and prints
+which hook died. The expansion buttons for nested replies are matched by English and Italian
 labels, so a UI in another language may lose some replies; the header always
 reports the gap between comments extracted and comments declared. Full list in
 [`SKILL.md`](SKILL.md).

@@ -56,7 +56,30 @@ VP_H=3000
 log() { printf '%s\n' "$*" >&2; }
 die() { local c="$1"; shift; log "ERROR: $*"; exit "$c"; }
 budget() { [ "$SECONDS" -ge "$MAX_SECONDS" ] && die 5 "internal timeout (${MAX_SECONDS}s)"; }
-ncomm() { $AB --session "$SESSION" eval 'document.querySelectorAll("article.comments-comment-entity").length' 2>/dev/null | tr -dc '0-9'; }
+# Counts comment blocks the way extract.js does: a text box whose owning block
+# has 3 children (header / body / social bar). There is no per-comment class or
+# id left to count in LinkedIn's server-driven UI.
+COUNT_JS='(() => {
+  const P = "a[href*=\"linkedin.com/in/\"],a[href*=\"linkedin.com/company/\"],a[href*=\"linkedin.com/school/\"],a[href*=\"linkedin.com/showcase/\"]";
+  const own = (b) => { let e = b.parentElement;
+    while (e && e !== document.body) {
+      if ([...e.querySelectorAll(P)].filter(x => !b.contains(x)).length) return e;
+      e = e.parentElement; }
+    return null; };
+  return [...document.querySelectorAll("[data-testid=\"expandable-text-box\"]")]
+    .map(own).filter(k => k && k.children.length === 3).length;
+})()'
+ncomm() { $AB --session "$SESSION" eval "$COUNT_JS" 2>/dev/null | tr -dc '0-9'; }
+# The page does not scroll on `window`: LinkedIn puts the scroll inside <main>
+# (overflow-y: scroll), so `agent-browser scroll` moves nothing and no further
+# comment is ever fetched. Measured on a 57-comment post: 18 loaded with the
+# window scroll, 62 driving main.scrollTop.
+SCROLL_JS='(() => { const m = document.querySelector("main") || document.scrollingElement;
+  m.scrollTop = m.scrollHeight; return m.scrollTop; })()'
+TOP_JS='(() => { const m = document.querySelector("main") || document.scrollingElement;
+  m.scrollTop = 0; return 1; })()'
+scroll_bottom() { $AB --session "$SESSION" eval "$SCROLL_JS" >/dev/null 2>&1 || true; }
+scroll_top() { $AB --session "$SESSION" eval "$TOP_JS" >/dev/null 2>&1 || true; }
 
 # `timeout` is GNU coreutils and is missing on a stock macOS. Without it the two
 # optional steps still run, just unbounded — that beats skipping them silently.
@@ -153,12 +176,18 @@ esac
 # is not needed: verified on a post with 14 comments that both orders serve the
 # same comments, same ids — only the order differs.
 prev=-1
-for round in 1 2 3 4 5 6 7 8; do
+still=0
+for round in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
   budget
-  $AB --session "$SESSION" scroll down 2500 >/dev/null 2>&1 || true
+  scroll_bottom
   sleep 2
   cur="$(ncomm)"; cur="${cur:-0}"
-  [ "$cur" = "$prev" ] && [ "$round" -ge 3 ] && break
+  if [ "$cur" = "$prev" ]; then
+    still=$((still+1))
+    [ "$still" -ge 3 ] && break
+  else
+    still=0
+  fi
   prev="$cur"
 done
 
@@ -166,25 +195,28 @@ done
 for round in 1 2 3 4 5; do
   budget
   clicked="$($AB --session "$SESSION" eval '(() => {
-    // First by class (language independent): the "…more" toggles of the post and
-    // of the comments. Then by label, for the buttons that carry no class of
-    // their own: "See previous replies", "Load more comments".
-    const byClass = [...document.querySelectorAll(
-      ".feed-shared-inline-show-more-text__see-more-less-toggle,"
-      + " .comments-comment-item__inline-show-more-text button,"
-      + " .update-components-text button")];
+    // The Ember classes are gone. What is left: the truncation toggles, which
+    // carry a data-testid, and the buttons that only have a label ("See
+    // previous replies", "Load more comments"). English and Italian are
+    // covered; on a UI in another language those are not clicked.
+    const byTestId = [...document.querySelectorAll("[data-testid=\"expandable-text-button\"]")];
     const want = /^(see previous replies|see previous reply|load more comments|show more comments|see more|…\s*more|more|vedi risposte precedenti|vedi risposta precedente|carica altri commenti|visualizza altri commenti|mostra altri commenti|…\s*altro|vedi altro)$/i;
     const byLabel = [...document.querySelectorAll("button,[role=button]")]
       .filter(b => want.test((b.innerText || "").replace(/\s+/g, " ").trim()));
-    const els = [...new Set([...byClass, ...byLabel])];
+    const els = [...new Set([...byTestId, ...byLabel])];
     els.forEach(b => { try { b.click(); } catch (e) {} });
     return els.length;
   })()' 2>/dev/null | tr -dc '0-9')"
   [ "${clicked:-0}" = "0" ] && break
   sleep 3
-  $AB --session "$SESSION" scroll down 1500 >/dev/null 2>&1 || true
+  scroll_bottom
 done
-sleep 1
+# Back to the top before extracting: the list is virtualised, and after a long
+# scroll the post body is unmounted. Without this the extractor finds no post
+# text and the run dies with exit 4, blaming the page structure for what is only
+# a scroll position.
+scroll_top
+sleep 2
 budget
 
 # --- structured extraction from the DOM (stable hooks, not the hashed classes)
