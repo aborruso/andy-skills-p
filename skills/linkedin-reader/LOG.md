@@ -1,5 +1,40 @@
 # LOG
 
+## 2026-09-11 - LinkedIn ha cambiato client web: estrazione riscritta
+
+- La skill restituiva zero commenti: LinkedIn ha sostituito il client Ember con un
+  renderer server-driven UI (`data-component-type="LazyColumn"`). Nella pagina non
+  esiste più nessun elemento `article`, non esiste `data-id`, e tutte le classi
+  superstiti sono hashate. `article.comments-comment-entity`, `.update-components-*`
+  e `.social-details-social-counts__comments` tornano 0 tutti insieme.
+- Niente payload JSON da cui leggere: nessuno `<script>` con i dati, nessun `<code>`
+  incorporato, e intercettando `fetch` durante il caricamento non passa nessuna
+  risposta con i commenti. Resta il DOM. Motivazione in `docs/adr/0002`.
+- Nuovi appigli: `[data-testid="expandable-text-box"]` per il corpo del post e di
+  ogni commento, più la forma del blocco che lo contiene (primo antenato con un
+  link identità fuori dal corpo, 3 figli). L'esclusione "fuori dal corpo" non è un
+  dettaglio: le menzioni dentro un commento sono anch'esse link a profilo, e senza
+  quel filtro 2 commenti su 4 risalivano al nodo sbagliato.
+- **Il blocco vero non era nei selettori: la pagina non scorre su `window`.** Lo
+  scroll sta dentro `<main>` (`overflow-y: scroll`), quindi `agent-browser scroll`
+  non muoveva niente e non veniva caricato nessun commento oltre i primi. Sul post
+  da 67 commenti: 18 con lo scroll della finestra, 65 pilotando `main.scrollTop`
+  (la versione precedente della skill, prima del cambio di UI, ne prendeva 56).
+  Anche `ncomm()` interrogava un selettore morto e restituiva sempre 0, così il
+  ciclo di scroll usciva al terzo giro.
+- Le risposte non sono più annidate nel DOM: stessa profondità dei commenti di
+  primo livello, si distinguono per rientro orizzontale (465 px contro 425 px).
+  Il `(reply)` ora si regge su quello, ed è scritto fra i limiti noti.
+- Il nome dell'autore arriva come composito di accessibilità ("Eric Raszewski,
+  MBA, Profilo Premium 2°"): si taglia sul grado di collegamento, che non dipende
+  dalla lingua. I commenti propri portano "Tu"/"You" al posto del grado, e quella
+  parola si legge dalla riga badge dello stesso link invece di indovinarla.
+- `SKILL.md` dava `[data-testid="expandable-text-box"]` per morto dal 2026-09-05 e
+  la pagina per priva di `data-testid`: oggi ce ne sono 17 ed è proprio quello
+  l'appiglio principale. Riscritto, non riverificato.
+- Collaudo su tre post: 4/4 commenti con una risposta annidata, 65/67 sul post
+  lungo, 15 su un post in italiano con 12 risposte e commenti propri.
+
 ## 2026-09-05 - install docs and the first-login path
 
 - The install instructions now lead with `npx skills add aborruso/andy-skills-p`
