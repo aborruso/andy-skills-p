@@ -85,10 +85,16 @@
   // The post body is the text box that is not a comment. Its card is the
   // outermost ancestor still free of comment blocks: a structural definition,
   // so it holds whatever the author is (member, company or showcase page).
+  // The climb stops under the LazyColumn that lists post and comments: on a
+  // post with no comments nothing else would stop it, the card would swallow
+  // the whole page, and the first identity link with a name in it is then the
+  // viewer's own profile card in the left column - the author came out as the
+  // logged-in user.
   const postBox = boxes.find(b => !blocks.some(p => p.box === b)) || null;
   let postCard = postBox;
   if (postCard) {
     while (postCard.parentElement && postCard.parentElement !== document.body
+      && postCard.parentElement.getAttribute('data-component-type') !== 'LazyColumn'
       && !blocks.some(p => postCard.parentElement.contains(p.block))) {
       postCard = postCard.parentElement;
     }

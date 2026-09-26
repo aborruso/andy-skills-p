@@ -107,8 +107,11 @@ did not serve every comment to this session: the file is partial and says so.
   (`/in/`, `/company/`, `/school/`, `/showcase/`) that is **not** part of the body
   itself - the exclusion matters, because a mention inside a comment is an
   identity link too. A comment block has exactly 3 children (header, body, social
-  bar); the post is the text box that is not a comment. None of this depends on
-  the UI language. When extraction fails, `die 4` prints the hook counts
+  bar); the post is the text box that is not a comment, and its card climbs no
+  higher than the `LazyColumn` that lists post and comments - without that
+  bound, a post with zero comments swallowed the whole page and the author came
+  out as the viewer's own profile card. None of this depends on the UI
+  language. When extraction fails, `die 4` prints the hook counts
   (`textBoxes=`, `commentBlocks=`, `commentary=`, `lazyColumn=`): all zeros mean
   the structure changed again.
 - **Author, timestamp and reactions have no hook of their own** and are read by
