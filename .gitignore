@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 .env
 **/.claude/settings.local.json
+tasks/
