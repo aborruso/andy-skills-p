@@ -22,15 +22,24 @@
 
   // "Eric Raszewski, MBA, Profilo Premium 2°" -> "Eric Raszewski, MBA"
   // The first text node of an identity link is an accessibility composite: the
-  // name followed by the Premium / Verified badges and by the degree of
-  // connection, all in the UI language. The degree marker is language
-  // independent, so the first cut hangs off it; the badge words are then peeled
-  // off by name. The remaining case is your own comments, marked "Tu"/"You"
-  // instead of a degree: that word is not guessable, but it is spelled out in
-  // the link's second text node ("• Tu"), so it gets taken from there.
+  // name followed by the Premium / Verified / Top Voice badges and by the
+  // degree of connection, all in the UI language. When badges are present the
+  // link also carries an `aria-hidden` span whose own text node is the visible
+  // name, bare: that copy is taken first, since it needs no list of badge
+  // words. Without badges there is no such span and the composite is the name
+  // itself: the degree marker is language independent, so the first cut hangs
+  // off it; the badge words are then peeled off by name. The remaining case is
+  // your own comments, marked "Tu"/"You" instead of a degree: that word is not
+  // guessable, but it is spelled out in the link's second text node ("• Tu"),
+  // so it gets taken from there.
   const BADGE = /\s*(Profilo\s+)?(Premium|Verificato|Verified)\s*$/i;
   const name = (el) => {
     if (!el) return '';
+    const visible = [...el.querySelectorAll('[aria-hidden="true"]')]
+      .map(h => [...h.childNodes].filter(n => n.nodeType === 3)
+        .map(n => n.textContent.replace(NB, ' ').trim()).filter(Boolean).join(' '))
+      .find(Boolean);
+    if (visible) return visible;
     const l = [...el.querySelectorAll('*')]
       .filter(x => x.children.length === 0 && x.textContent.trim())
       .map(x => x.textContent.replace(NB, ' ').trim());

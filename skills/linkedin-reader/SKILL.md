@@ -117,9 +117,12 @@ did not serve every comment to this session: the file is partial and says so.
 - **Author, timestamp and reactions have no hook of their own** and are read by
   position inside their block, not from a line of the whole page's innerText.
   The author name arrives as an accessibility composite ("Eric Raszewski, MBA,
-  Profilo Premium 2°") and is trimmed off the degree marker, which is language
-  independent; your own comments carry "Tu"/"You" in place of a degree, taken
-  from the badge row of the same link.
+  Profilo Premium 2°", "Matt Forrest Profilo Executive Top Voice 1°"); when
+  badges are present the link also holds an `aria-hidden` span with the bare
+  visible name, which is what gets used, with no list of badge words to keep.
+  Without badges the composite is trimmed off the degree marker, which is
+  language independent; your own comments carry "Tu"/"You" in place of a
+  degree, taken from the badge row of the same link.
 - **The page does not scroll on `window`**: LinkedIn puts the scroll inside
   `<main>` (`overflow-y: scroll`). `agent-browser scroll` therefore moves nothing
   and no further comment is fetched - measured on a 57-comment post, 18 loaded

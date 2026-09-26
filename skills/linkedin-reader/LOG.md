@@ -2,6 +2,7 @@
 
 ## 2026-09-26
 
+- Fix: comment authors with a badge the extractor did not know kept it in the name ("Matt Forrest Profilo Executive Top Voice"). The name is now read from the `aria-hidden` span that carries the bare visible name, present whenever a badge is; the badge-word trimming stays as fallback. Checked on the 19-comment post: all 19 names bare.
 - Fix: on a post with 0 comments the post card climbed to the page root and the author was read from the viewer's own profile card ("Andrea Borruso" on a Stefaan Verhulst post). The climb now stops under the `LazyColumn`. Checked on that post (0 comments) and on a 19-comment post.
 
 ## 2026-09-11 - LinkedIn ha cambiato client web: estrazione riscritta
