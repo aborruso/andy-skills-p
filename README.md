@@ -24,6 +24,14 @@ The wizard asks which AI clients to install it for, whether to install globally 
 
 Before the first read it needs a one-off manual login in a visible browser window, and it expects `agent-browser` on the PATH: see [its README](skills/linkedin-reader#one-off-login).
 
+### Release explorer
+
+[`release-explorer`](skills/release-explorer) reads the release notes of a project you follow, on GitHub or elsewhere, and tells you the points that matter to you, based on what your agent already knows about you. It then asks whether you want to try the release: if you do, it checks that your environment allows the test, installs that exact version in a temporary system folder, and builds the examples with you. When the agent cannot operate the software itself, as with a Windows desktop app and an agent running in WSL, it prepares the working files and guides you one step at a time.
+
+```bash
+npx skills add aborruso/andy-skills-p --skill release-explorer
+```
+
 ## License
 
 MIT - see [LICENSE](LICENSE).
