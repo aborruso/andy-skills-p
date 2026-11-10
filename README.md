@@ -4,7 +4,27 @@ This is where I collect some of the Agent Skills I actually use, published becau
 
 A skill is a folder with a `SKILL.md` inside: frontmatter that says what it does and when to use it, and a body with the instructions the agent follows. The format is the one described by the [Agent Skills specification](https://agentskills.io/specification): it is client-neutral, so these work with any AI client that reads skills - Claude Code, Cursor, Codex, Copilot, Gemini CLI and the others alike. Nothing here is tied to a specific one.
 
-Each skill is installed on its own, with the command in its section below. Installing needs Node, since it goes through `npx`.
+## Installing and updating
+
+Each skill is installed on its own, with the command in its section below. Installing needs Node, since it goes through `npx` and the [`skills`](https://github.com/vercel-labs/skills) CLI.
+
+The rule is: always install through the CLI, pointing it at this repo, and then update through the CLI. Never link or copy a skill folder by hand into a client directory: the CLI does not know about it, so `list`, `update` and `remove` ignore it, and it stays frozen at the version you copied.
+
+The wizard asks which AI clients to install it for, whether to install globally or only in the current project, and whether to link or copy the files. Answer **global** and **symlink**: global makes the skill available in every project, and the symlink lets every client share one copy, which lives in `~/.agents/skills/`. To skip the wizard:
+
+```bash
+npx skills add aborruso/andy-skills-p --skill <skill-name> -g -a '*' -y
+```
+
+The installed copy is a snapshot downloaded from GitHub: it does not change on its own. To pick up a new version, run the update and the CLI compares the installed files with the repo and downloads them again when they differ:
+
+```bash
+npx skills update <skill-name> -g
+```
+
+If you work on a local clone of this repo, the CLI also accepts a path as source, `npx skills add ./andy-skills-p --skill <skill-name>` or an absolute path, and `update` then reads from that clone. The online repo is still the way to go unless you are changing the skill yourself.
+
+Running `npx skills add` again for a skill that is already installed also works: it warns that it overwrites the existing one and replaces it.
 
 ## Skills
 
@@ -19,8 +39,6 @@ It works on a single link at a time, on purpose: one post per invocation, no bat
 ```bash
 npx skills add aborruso/andy-skills-p --skill linkedin-reader
 ```
-
-The wizard asks which AI clients to install it for, whether to install globally or only in the current project, and whether to link or copy the files. Answer **global** and **symlink**: global makes the skill available in every project, and the symlink keeps it following the repo, so later changes come down with `npx skills update linkedin-reader` - a copy has to be reinstalled instead.
 
 Before the first read it needs a one-off manual login in a visible browser window, and it expects `agent-browser` on the PATH: see [its README](skills/linkedin-reader#one-off-login).
 
