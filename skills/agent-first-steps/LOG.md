@@ -6,3 +6,4 @@
 - Generated prompt installs nothing by default and proposes what the project requires or recommends, asking permission, extensions included
 - Command-line tools: isolated install (`uv tool install`, `npx`), `--help` read first, and the prompt says so when the help is built for agents, only after checking
 - From the first real case, a public dataset built by a private pipeline: datasets count as subjects, one prompt per reader (users and maintainers apart), only the traps that bite in the first steps
+- From the openrndt test: the agent stopped to ask before installing a tool that was already there. The prompt now checks first, asks only for what is missing, and offers optional extras after the first try

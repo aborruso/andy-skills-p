@@ -77,11 +77,11 @@ The first try is the step the reader will judge everything by. If it only reads 
 Keep it to about ten lines. If it needs more, point to a document instead of copying it in.
 
 - **Self-contained.** Absolute URLs only. No paths from this machine, no "the file above", no assumption about which agent reads it.
-- **Installs nothing by default, proposes what is needed.** The agent checks what is already there, tells the person what the project requires or strongly recommends and why, and asks permission for each install, extensions included. The person pasting may not have read the commands, but they also cannot act on a requirement nobody mentioned, so leaving it out is as wrong as installing it silently. If they decline, the agent says what still works without it, or stops.
+- **Checks first, asks only for what is missing.** The first step finds out what is already there. What is present in a suitable version is used without asking, and the run goes on: a confirmation for something already installed stops the agent for nothing. For the rest, the agent tells the person what the project requires or strongly recommends and why, and asks permission for each install, extensions included. The person pasting may not have read the commands, but they also cannot act on a requirement nobody mentioned, so leaving it out is as wrong as installing it silently. If they decline, the agent says what still works without it, or stops.
 - **A check after each install**, so a failure stops the sequence where it happened.
 - **Human-only steps are handed over.** The agent stops, tells the person exactly what to do, and waits.
 - **No secrets.** Name the variable or the page where a key is obtained, never a value.
-- **Ends with a result.** The first try, then one question to the person about what to do next.
+- **Ends with a result.** The first try, then one message that asks the person what to do next and offers the optional extras, such as a skill, if they are not there yet. Offered earlier, the extras interrupt the run before anything has been shown.
 - **Inline code only.** No fenced blocks inside the prompt, so it can sit inside one in a README. A setup of several statements stays in the document that holds it: the prompt points there and says to run it.
 
 If the only documented install is piping a remote script into a shell, keep it only if it is the project's official route, and have the agent show the script before running it.
@@ -92,13 +92,14 @@ A tool with an optional skill and a manual login:
 
 Set up geo-tool for me. It is a command-line tool that converts Italian cadastral files to GeoParquet.
 
-1. Check that Python 3.11+ and `uv` are available. If not, tell me how to get them and ask whether I want them installed.
-2. Install nothing without asking. Tell me that this needs `geo-tool` and wait for my OK, then run `uv tool install geo-tool`.
-3. Run `geo-tool --help` first: it proves the install worked and lists every command. It is written for agents, so use it as your main guide, and open a command's own `--help` before using it.
-4. For anything the help does not cover, read https://github.com/example/geo-tool/blob/main/README.md
-5. Optional, only if I say yes: `npx skills add example/geo-tool --skill geo-tool`
+1. Run `geo-tool --version`. If it answers 2.0 or later, it is already installed: do not ask me anything and go to step 4.
+2. If it is missing or older, check that Python 3.11+ and `uv` are available. If not, tell me how to get them and ask whether I want them installed.
+3. Tell me that this needs `geo-tool` and wait for my OK, then run `uv tool install geo-tool`. Run `geo-tool --version` again, and if it fails, stop and show me the error.
+4. Run `geo-tool --help` first: it lists every command. It is written for agents, so use it as your main guide, and open a command's own `--help` before using it.
+5. For anything the help does not cover, read https://github.com/example/geo-tool/blob/main/README.md
 6. I have to log in myself: tell me to run `geo-tool login` in my own terminal and wait until I say it is done.
-7. Run `geo-tool convert https://example.org/sample.gml -o sample.parquet`, show me the row count, then ask me what I want to convert.
+7. Run `geo-tool convert https://example.org/sample.gml -o sample.parquet` and show me the row count.
+8. Only then, in one message, ask me what I want to convert and offer the optional skill, if I do not have it yet: `npx skills add example/geo-tool --skill geo-tool`. Install it only if I say yes.
 
 ---
 
@@ -108,9 +109,9 @@ A project to clone:
 
 Help me get started on the project at https://github.com/example/land-registry
 
-1. Ask me where to put it, then clone it there.
+1. Ask me whether I already have a clone. If I do, use it. If not, ask me where to put it and clone it there.
 2. Read its `README.md` and `AGENTS.md`, and tell me in three lines what it does.
-3. Tell me which dependencies you are about to install and wait for my OK, then run `make setup`.
+3. Check which dependencies are already there. If nothing is missing, go on without asking. Otherwise tell me which ones you are about to install and wait for my OK, then run `make setup`.
 4. Run `make test` and report the result.
 5. Run `make sample`, show me the first rows of `output/sample.csv`, then ask me what I want to work on.
 

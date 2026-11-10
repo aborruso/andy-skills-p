@@ -10,7 +10,7 @@ An Agent Skill that writes a short first-steps prompt for a tool, application, p
 4. It verifies every link and package name, read-only. It installs nothing, and what does not verify is removed and reported to you.
 5. It shows you the prompt ready to copy, in the language of the project's README, and asks whether to add it to the README.
 
-The generated prompt tells the receiving agent to install nothing by default, to tell the person what the project requires or strongly recommends and ask permission for each install, and to hand interactive logins, API keys and `sudo` back to the person.
+The generated prompt tells the receiving agent to check first what is already there, to go on without asking when it is, to tell the person what the project requires or strongly recommends and ask permission for each missing install, and to hand interactive logins, API keys and `sudo` back to the person.
 
 ## Requirements
 
