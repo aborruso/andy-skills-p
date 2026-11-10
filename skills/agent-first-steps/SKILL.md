@@ -121,4 +121,4 @@ Help me get started on the project at https://github.com/example/land-registry
 
 Before the prompt, say what you could not verify and what you removed. Then give the prompt between horizontal rules, as plain text: a Markdown quote would be copied along with its `>` markers.
 
-Then ask whether to add it to the project's README. Only on a yes, add a short section such as "Use it with your agent", with the prompt in a fenced `text` block, and leave the rest of the file untouched.
+Then ask whether to add it to the project's README. Only on a yes, add a section titled exactly `Agent quickstart`, in English whatever the language of the README so that a check on Markdown headings can find it, with one line right below it in the README's language and the prompt in a fenced `text` block. Leave the rest of the file untouched.
