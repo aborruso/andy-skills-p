@@ -50,6 +50,14 @@ Before the first read it needs a one-off manual login in a visible browser windo
 npx skills add aborruso/andy-skills-p --skill release-explorer
 ```
 
+### Agent first steps
+
+[`agent-first-steps`](skills/agent-first-steps) writes a short prompt that someone can paste into their own agent to get started on a tool, application, pipeline, dataset or project: what to install, how to check it worked, what to read, which skill to add, what to try first. It reads the project's sources and verifies links and package names, without installing anything, and shows you the prompt ready to copy.
+
+```bash
+npx skills add aborruso/andy-skills-p --skill agent-first-steps
+```
+
 ## License
 
 MIT - see [LICENSE](LICENSE).
